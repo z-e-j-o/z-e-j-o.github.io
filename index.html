@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Zejo - Word Challenge</title>
+<style>
+.but {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.topdiv {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#helpMessage {
+  visibility: hidden;
+  max-width: 500px; /* Set a default minimum width */
+  min-width: 250px; /* Set a default minimum width */
+  margin-left: -250px; /* Divide value of min-width by 2 */
+  background-color: #333;
+  color: #fff;
+  /* text-align: center; */
+  border-radius: 10px; /* Rounded borders */
+  padding: 16px;
+  position: fixed; /* Sit on top of the screen */
+  z-index: 1;
+  left: 50%;
+  top: 20%;
+}
+
+#helpMessage.show {
+  visibility: visible;
+}
+
+#snackbar {
+  visibility: hidden; /* Hidden by default. Visible on click */
+  min-width: 250px; /* Set a default minimum width */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 10px; /* Rounded borders */
+  padding: 16px;
+  position: fixed; /* Sit on top of the screen */
+  z-index: 1;
+  left: 50%;
+  bottom: 50%;
+}
+
+#snackbar.show {
+  visibility: visible;
+  /* Add animation: Take 0.5 seconds to fade in and out
+  However, delay the fade out process for 2.5 seconds */
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes fadein {
+  from {bottom: 47%; opacity: 0;}
+  to {bottom: 50%; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 47%; opacity: 0;}
+  to {bottom: 50%; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 50%; opacity: 1;}
+  to {bottom: 47%; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 50%; opacity: 1;}
+  to {bottom: 47%; opacity: 0;}
+} 
+</style>
+</head>
+
+<body>
+
+<div class="topdiv">
+<canvas id="myCanvas" width="400" height="600"></canvas>
+</div>
+<div class="but">
+<button id="randButton" onclick="getRandomWord()">Play random word</button>
+<button id="helpButton" onclick="showHelp()">Help</button>
+</div>
+<footer class="topdiv"> <small>&copy; Copyright 2022, A. M. Bilstad</small> </footer> 
+<div id="snackbar">message</div>
+
+<div id="helpMessage">
+<p>Guess the word-of-the-day using ten guesses or less.  Submit each guess by typing 4 letters,
+followed by the Enter key.  (A guess is not required to be a valid word.)  After each guess, a response is
+provided to the guess in the four circles to the right:  A red circle indicates there is a correct letter
+in a correct position.  A white circle indicates there is a correct letter, but not in the correct
+position.</p>
+<p>If you'd like to play using a different word than the word-of-the-day, press the "Play random word" button.</p>
+<p>[Press a key to close this help]</p>
+</div>
+
+<script>
+//<script type="module">
+
+// Copyright 2022  A. M. Bilstad
+// All rights reserved
+
+//<button id="friendButton" onclick="getWord()">Challenge a friend</button>
+
+//<canvas id="myCanvas" width="800" height="800" style="border:1px solid grey"></canvas>
+let inHelp = false;
+document.onkeydown = onKeyDown;
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+//canvas.height = canvas.width;
+//ctx.transform(1, 0, 0, -1, 0, canvas.height)
+
+//ctx.font = 'bold 48px serif';
+//ctx.font = 'bold 48px fixed';
+ctx.font = 'bold 36px sans-serif';
+//ctx.textAlign = "left" || "right" || "center" || "start" || "end";
+ctx.textAlign = 'center';
+//ctx.textBaseline = "top" || "hanging" || "middle" || "alphabetic" || "ideographic" || "bottom";
+ctx.textBaseline = 'middle';
+
+const word_len = 4;
+const num_guesses = 10;
+//const bgcolor = 'rgb(0,0,255)';
+const bgcolor = 'rgba(48,154,193,255)';
+const top_marg = 50;
+
+// game variables:
+let word = null;
+let curx = 100;
+let cury = top_marg;
+let buf = '';
+let gi = 0;
+let done = false;
+
+function begin() {
+  getWordOfTheDay();
+  playSetup();
+}
+
+function showHelp() {
+  console.log('showHelp');
+  document.getElementById("helpMessage").className = "show";
+  inHelp = true;
+}
+
+function onKeyDownHelp() {
+  console.log('onKeyDownHelp');
+  let m = document.getElementById("helpMessage");
+  m.className = m.className.replace("show", "");
+  inHelp = false;
+}
+
+function getRandomWord() {
+  if (inHelp) return;
+  let i = Math.floor(Math.random() * dict.length);
+  let w = dict[i];
+  word = w.toUpperCase();
+  playSetup();
+  showToast("OK, a new random word has been chosen")
+}
+
+function getWord() {
+  let w = window.prompt('Choose a secret word (4 letters)');
+  word = w.toUpperCase();
+  playSetup();
+}
+
+function myhash(d) {
+  return Math.floor(((d%5*7477 + d%61*2017 + 701)*6311) % dict.length);
+}
+
+function getWordOfTheDay() {
+  let now = Math.floor(new Date() / 1000);
+  let tzoffset = 8*60*60;
+  let d = Math.floor((now - tzoffset) / (24*60*60));
+  console.log(`day is ${d}`);
+  let w = dict[myhash(d)];
+  word = w.toUpperCase();
+}
+
+function playSetup() {
+  curx = 100;
+  cury = top_marg;
+  buf = '';
+  gi = 0;
+  done = false;
+  ctx.fillStyle = bgcolor;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  let x = 50;
+  let y = top_marg;
+  ctx.font = '16px sans-serif';
+  for (let i=1; i <= num_guesses; i++) {
+    ctx.fillStyle = `rgb(255,255,255)`;
+    ctx.fillText(`${i}`, x, y)
+    y += 50;
+
+    showResult(i-1, {red:0, white:0});
+  }
+  ctx.font = 'bold 36px sans-serif';
+  moveCursor(gi);
+}
+
+function moveCursor(gi) {
+  let x = 25;
+  ctx.fillStyle = bgcolor;
+  ctx.fillRect(0, 0, 35, canvas.height);
+  ctx.font = 'bold 16px sans-serif';
+  ctx.fillStyle = `rgb(255,255,255)`;
+  ctx.fillText('>', x, top_marg+gi*50);
+  ctx.font = 'bold 36px sans-serif';
+}
+
+function onKeyDown(e) {
+  document.getElementById("helpButton").blur();
+  document.getElementById("randButton").blur();
+  if (inHelp) return onKeyDownHelp();
+  if (done) return;
+  let id = e.keyCode;
+  if (id >= 65 && id <= 90) {
+    onLetter(e.key.toUpperCase());
+  }
+  else if (id === 13) {
+    onEnter();
+  }
+  else if (id === 8) {
+    onBackspace();
+  }
+}
+
+function onLetter(letter) {
+  //ctx.fillStyle = `rgb(255,255,255)`;
+  //ctx.fillRect(curx,cury+5,50,-50);
+  if (buf.length >= word_len) return;
+  ctx.fillStyle = `rgb(255,255,255)`;
+  ctx.fillText(`${letter}`, curx, cury)
+  curx += 50;
+  buf += letter;
+}
+
+function onBackspace() {
+  if (curx > 100) {
+    curx -= 50;
+    ctx.fillStyle = bgcolor;
+    ctx.fillRect(curx-25, cury-25, 50, 50);
+    buf = buf.substring(0, buf.length-1);
+  }
+}
+
+function onEnter() {
+  if (buf.length != word_len) return;
+  cury += 50;
+  curx = 100;
+  let solved = onGuess(buf, gi);
+  gi++;
+  if (!solved && gi < num_guesses) {
+    buf = '';
+    moveCursor(gi);
+  } else {
+    done = true;
+    if (solved) {
+      showToast("Well done!");
+    } else {
+      showToast(`Sorry! The answer was ${word}`);
+    }
+  }
+}
+
+function onGuess(guess, gi) {
+  //console.log(`guess:  ${gi} ${buf}`);
+  let result = calcResult(word, guess);
+  //console.log(`result:  ${result.red} ${result.white}`);
+  showResult(gi, result);
+  return (result.red == word_len);
+}
+
+function calcResult(word, guess) {
+  let red = 0;
+  let white = 0;
+
+  let w = []
+  let g = []
+  for (let i=0; i < guess.length; i++) {
+    if (guess[i] === word[i]) {
+      red += 1;
+      g[i] = '-';
+      w[i] = '-';
+    } else {
+      w[i] = word[i];
+      g[i] = guess[i];
+    }
+  }
+
+  for (let i=0; i < guess.length; i++) {
+    if (g[i] != '-') {
+      let j = w.indexOf(g[i]);
+      //console.log(`white match: guess ${g} word ${w} ${i} ${j}`);
+      if (j != -1) {
+        white += 1;
+        w[j] = '-';
+      }
+    }
+  }
+
+  return {red:red, white:white}
+}
+
+function showResult(gi, result) {
+  let ey = top_marg + gi*50 - 10;
+  let r = result.red;
+  let w = result.white;
+  ctx.strokeStyle = `rgb(255,255,255)`;
+  ctx.fillStyle = `rgb(255,0,0)`;
+  for (let i=0; i < 4; i++) {
+    if (r > 0) {
+      ctx.fillStyle = `rgb(255,0,0)`;
+      r--;
+    }
+    else if (w > 0) {
+      ctx.fillStyle = `rgb(255,255,255)`;
+      w--;
+    }
+    else {
+      ctx.fillStyle = bgcolor;
+    }
+    ctx.beginPath();
+    ctx.ellipse(300+(i % 2)*15, ey+(Math.floor(i/2))*15, 5, 5, 0, 0, 2*Math.PI);
+    ctx.fill();
+    ctx.stroke();
+  }
+}
+
+function showToast(msg) {
+  var x = document.getElementById("snackbar");
+  x.innerHTML = msg;
+  x.className = "show";  // Add the "show" class to DIV
+
+  // this delay is roughly the sum of fade_in + dwell + fade_out
+  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2900);
+}
+
+
+const dict_str = "YWJsZQphY2lkCmFnZWQKYWxzbwphcmVhCmFybXkKYXdheQpiYWJ5CmJhY2sKYmFsbApiYW5kCmJhbmsKYmFzZQpiYXRoCmJlYXIKYmVhdApiZWVuCmJlZXIKYmVsbApiZWx0CmJlc3QKYmlsbApiaXJkCmJsb3cKYmx1ZQpib2F0CmJvZHkKYm9tYgpib25kCmJvbmUKYm9vawpib29tCmJvcm4KYm9zcwpib3RoCmJvd2wKYnVsawpidXJuCmJ1c2gKYnVzeQpjYWxsCmNhbG0KY2FtZQpjYW1wCmNhcmQKY2FyZQpjYXNlCmNhc2gKY2FzdApjZWxsCmNoYXQKY2hpcApjaXR5CmNsdWIKY29hbApjb2F0CmNvZGUKY29sZApjb21lCmNvb2sKY29vbApjb3BlCmNvcHkKQ09SRQpjb3N0CmNyZXcKY3JvcApkYXJrCmRhdGEKZGF0ZQpkYXduCmRheXMKZGVhZApkZWFsCmRlYW4KZGVhcgpkZWJ0CmRlZXAKZGVueQpkZXNrCmRpYWwKZGljawpkaWV0CmRpc2MKZGlzawpkb2VzCmRvbmUKZG9vcgpkb3NlCmRvd24KZHJhdwpkcmV3CmRyb3AKZHJ1ZwpkdWFsCmR1a2UKZHVzdApkdXR5CmVhY2gKZWFybgplYXNlCmVhc3QKZWFzeQplZGdlCmVsc2UKZXZlbgpldmVyCmV2aWwKZXhpdApmYWNlCmZhY3QKZmFpbApmYWlyCmZhbGwKZmFybQpmYXN0CmZhdGUKZmVhcgpmZWVkCmZlZWwKZmVldApmZWxsCmZlbHQKZmlsZQpmaWxsCmZpbG0KZmluZApmaW5lCmZpcmUKZmlybQpmaXNoCmZpdmUKZmxhdApmbG93CmZvb2QKZm9vdApmb3JkCmZvcm0KZm9ydApmb3VyCmZyZWUKZnJvbQpmdWVsCmZ1bGwKZnVuZApnYWluCmdhbWUKZ2F0ZQpnYXZlCmdlYXIKZ2VuZQpnaWZ0CmdpcmwKZ2l2ZQpnbGFkCmdvYWwKZ29lcwpnb2xkCkdvbGYKZ29uZQpnb29kCmdyYXkKZ3JldwpncmV5Cmdyb3cKZ3VsZgpoYWlyCmhhbGYKaGFsbApoYW5kCmhhbmcKaGFyZApoYXJtCmhhdGUKaGF2ZQpoZWFkCmhlYXIKaGVhdApoZWxkCmhlbGwKaGVscApoZXJlCmhlcm8KaGlnaApoaWxsCmhpcmUKaG9sZApob2xlCmhvbHkKaG9tZQpob3BlCmhvc3QKaG91cgpodWdlCmh1bmcKaHVudApodXJ0CmlkZWEKaW5jaAppbnRvCmlyb24KaXRlbQpqYWNrCmphbmUKamVhbgpqb2huCmpvaW4KanVtcApqdXJ5Cmp1c3QKa2VlbgprZWVwCmtlbnQKa2VwdApraWNrCmtpbGwKa2luZApraW5nCmtuZWUKa25ldwprbm93CmxhY2sKbGFkeQpsYWlkCmxha2UKbGFuZApsYW5lCmxhc3QKbGF0ZQpsZWFkCmxlZnQKbGVzcwpsaWZlCmxpZnQKbGlrZQpsaW5lCmxpbmsKbGlzdApsaXZlCmxvYWQKbG9hbgpsb2NrCmxvZ28KbG9uZwpsb29rCmxvcmQKbG9zZQpsb3NzCmxvc3QKbG92ZQpsdWNrCm1hZGUKbWFpbAptYWluCm1ha2UKbWFsZQptYW55Ck1hcmsKbWFzcwptYXR0Cm1lYWwKbWVhbgptZWF0Cm1lZXQKbWVudQptZXJlCm1pa2UKbWlsZQptaWxrCm1pbGwKbWluZAptaW5lCm1pc3MKbW9kZQptb29kCm1vb24KbW9yZQptb3N0Cm1vdmUKbXVjaAptdXN0Cm5hbWUKbmF2eQpuZWFyCm5lY2sKbmVlZApuZXdzCm5leHQKbmljZQpuaWNrCm5pbmUKbm9uZQpub3NlCm5vdGUKb2theQpvbmNlCm9ubHkKb250bwpvcGVuCm9yYWwKb3ZlcgpwYWNlCnBhY2sKcGFnZQpwYWlkCnBhaW4KcGFpcgpwYWxtCnBhcmsKcGFydApwYXNzCnBhc3QKcGF0aApwZWFrCnBpY2sKcGluawpwaXBlCnBsYW4KcGxheQpwbG90CnBsdWcKcGx1cwpwb2xsCnBvb2wKcG9vcgpwb3J0CnBvc3QKcHVsbApwdXJlCnB1c2gKcmFjZQpyYWlsCnJhaW4KcmFuawpyYXJlCnJhdGUKcmVhZApyZWFsCnJlYXIKcmVseQpyZW50CnJlc3QKcmljZQpyaWNoCnJpZGUKcmluZwpyaXNlCnJpc2sKcm9hZApyb2NrCnJvbGUKcm9sbApyb29mCnJvb20Kcm9vdApyb3NlCnJ1bGUKcnVzaApydXRoCnNhZmUKc2FpZApzYWtlCnNhbGUKc2FsdApzYW1lCnNhbmQKc2F2ZQpzZWF0CnNlZWQKc2VlawpzZWVtCnNlZW4Kc2VsZgpzZWxsCnNlbmQKc2VudApzZXB0CnNoaXAKc2hvcApzaG90CnNob3cKc2h1dApzaWNrCnNpZGUKc2lnbgpzaXRlCnNpemUKc2tpbgpzbGlwCnNsb3cKc25vdwpzb2Z0CnNvaWwKc29sZApzb2xlCnNvbWUKc29uZwpzb29uCnNvcnQKc291bApzcG90CnN0YXIKc3RheQpzdGVwCnN0b3AKc3VjaApzdWl0CnN1cmUKdGFrZQp0YWxlCnRhbGsKdGFsbAp0YW5rCnRhcGUKdGFzawp0ZWFtCnRlY2gKdGVsbAp0ZW5kCnRlcm0KdGVzdAp0ZXh0CnRoYW4KdGhhdAp0aGVtCnRoZW4KdGhleQp0aGluCnRoaXMKdGh1cwp0aWxsCnRpbWUKdGlueQp0b2xkCnRvbGwKdG9uZQp0b255CnRvb2sKdG9vbAp0b3VyCnRvd24KdHJlZQp0cmlwCnRydWUKdHVuZQp0dXJuCnR3aW4KdHlwZQp1bml0CnVwb24KdXNlZAp1c2VyCnZhcnkKdmFzdAp2ZXJ5CnZpY2UKdmlldwp2b3RlCndhZ2UKd2FpdAp3YWtlCndhbGsKd2FsbAp3YW50CndhcmQKd2FybQp3YXNoCndhdmUKd2F5cwp3ZWFrCndlYXIKd2Vlawp3ZWxsCndlbnQKd2VyZQp3ZXN0CndoYXQKd2hlbgp3aG9tCndpZGUKd2lmZQp3aWxkCndpbGwKd2luZAp3aW5lCndpbmcKd2lyZQp3aXNlCndpc2gKd2l0aAp3b29kCndvcmQKd29yZQp3b3JrCnlhcmQKeWVhaAp5ZWFyCnlvdXIKemVybwp6b25l";
+
+const dict = atob(dict_str).split("\n");
+
+begin();
+
+</script>
+
+</body>
+</html>
