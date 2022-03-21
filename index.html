@@ -16,19 +16,17 @@
 }
 
 #helpMessage {
+  position: fixed; /* Sit on top of the screen */
   visibility: hidden;
-  max-width: 500px; /* Set a default minimum width */
-  min-width: 250px; /* Set a default minimum width */
-  margin-left: -250px; /* Divide value of min-width by 2 */
+  top: 10%;
+  left: 50%;
+  width: 280px;
+  padding: 10px;
+  margin-left: -150px;
   background-color: #333;
   color: #fff;
-  /* text-align: center; */
   border-radius: 10px; /* Rounded borders */
-  padding: 16px;
-  position: fixed; /* Sit on top of the screen */
   z-index: 1;
-  left: 50%;
-  top: 20%;
 }
 
 #helpMessage.show {
@@ -36,18 +34,18 @@
 }
 
 #snackbar {
-  visibility: hidden; /* Hidden by default. Visible on click */
-  min-width: 250px; /* Set a default minimum width */
-  margin-left: -125px; /* Divide value of min-width by 2 */
+  position: fixed; /* Sit on top of the screen */
+  visibility: hidden;
+  bottom: 50%;
+  left: 50%;
+  min-width: 250px;
+  padding: 15px;
+  margin-left: -140px;
   background-color: #333;
   color: #fff;
   text-align: center;
   border-radius: 10px; /* Rounded borders */
-  padding: 16px;
-  position: fixed; /* Sit on top of the screen */
   z-index: 1;
-  left: 50%;
-  bottom: 50%;
 }
 
 #snackbar.show {
@@ -77,14 +75,62 @@
 @keyframes fadeout {
   from {bottom: 50%; opacity: 1;}
   to {bottom: 47%; opacity: 0;}
-} 
+}
+
+input {
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 36px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  width: 5em;
+}
+
+input:disabled {
+  background-color: white;
+}
+
+body {
+  color: white;
+  background-color: rgba(48,154,193,255);
+}
+
+table {
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+tr {
+  vertical-align: middle;
+}
+
+#myform_submit {
+  visibility: hidden;
+  position: fixed;
+}
 </style>
 </head>
 
 <body>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <div class="topdiv">
-<canvas id="myCanvas" width="400" height="550"></canvas>
+<form id="myform" method="" autocomplete="off">
+<table>
+<tr><td>1.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" autofocus></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>2.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>3.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>4.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>5.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>6.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>7.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>8.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>9.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>10.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+</table>
+<input id="myform_submit" type="submit" onclick="return onEnter2()">
+</form>
 </div>
 <div class="but">
 <button id="randButton" onclick="getRandomWord()">Play random word</button>
@@ -100,33 +146,21 @@ provided to the guess in the four circles to the right:  A red dot indicates the
 in a correct position.  A white dot indicates there is a correct letter, but not in the correct
 position.</p>
 <p>If you'd like to play using a different word than the word-of-the-day, press the "Play random word" button.</p>
-<p>[Press a key to close this help]</p>
+<div class="but">
+<button id="helpCloseButton" onclick="closeHelp()">OK</button>
+</div>
 </div>
 
 <script>
-//<script type="module">
 
 // Copyright 2022  A. M. Bilstad
 // All rights reserved
 
 //<button id="friendButton" onclick="getWord()">Challenge a friend</button>
 
-//<canvas id="myCanvas" width="800" height="800" style="border:1px solid grey"></canvas>
 let inHelp = false;
-document.onkeydown = onKeyDown;
-const canvas = document.getElementById("myCanvas");
-const ctx = canvas.getContext("2d");
-//canvas.height = canvas.width;
-//ctx.transform(1, 0, 0, -1, 0, canvas.height)
 
-//ctx.font = 'bold 48px serif';
-//ctx.font = 'bold 48px fixed';
-ctx.font = 'bold 36px sans-serif';
-//ctx.textAlign = "left" || "right" || "center" || "start" || "end";
-ctx.textAlign = 'center';
-//ctx.textBaseline = "top" || "hanging" || "middle" || "alphabetic" || "ideographic" || "bottom";
-ctx.textBaseline = 'middle';
-
+const myform = document.getElementById("myform");
 const word_len = 4;
 const num_guesses = 10;
 //const bgcolor = 'rgb(0,0,255)';
@@ -134,7 +168,7 @@ const bgcolor = 'rgba(48,154,193,255)';
 const top_marg = 50;
 
 const win_msg = {
-  1: 'Abundantly lucky!',
+  1: 'Incredibly lucky!',
   2: 'Pure genius!',
   3: 'Wow! Amazing!',
   4: 'Awesome!',
@@ -148,11 +182,18 @@ const win_msg = {
 
 // game variables:
 let word = null;
-let curx = 100;
-let cury = top_marg;
-let buf = '';
 let gi = 0;
 let done = false;
+
+let gtext = myform.querySelectorAll("input");
+let rcanv = myform.querySelectorAll("canvas");
+gtext[0].value = "";
+rcanv.forEach((c) => {
+  //console.log(`${c.id} ${c.width} ${c.height}`);
+  let ctx = c.getContext("2d");
+  ctx.fillStyle = bgcolor;
+  ctx.fillRect(0, 0, c.width, c.height);
+});
 
 function begin() {
   getWordOfTheDay();
@@ -160,13 +201,11 @@ function begin() {
 }
 
 function showHelp() {
-  console.log('showHelp');
   document.getElementById("helpMessage").className = "show";
   inHelp = true;
 }
 
-function onKeyDownHelp() {
-  console.log('onKeyDownHelp');
+function closeHelp() {
   let m = document.getElementById("helpMessage");
   m.className = m.className.replace("show", "");
   inHelp = false;
@@ -201,84 +240,31 @@ function getWordOfTheDay() {
 }
 
 function playSetup() {
-  curx = 100;
-  cury = top_marg;
-  buf = '';
   gi = 0;
   done = false;
-  ctx.fillStyle = bgcolor;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let x = 50;
-  let y = top_marg;
-  ctx.font = '16px sans-serif';
-  for (let i=1; i <= num_guesses; i++) {
-    ctx.fillStyle = `rgb(255,255,255)`;
-    ctx.fillText(`${i}`, x, y)
-    y += 50;
-
-    showResult(i-1, {red:0, white:0});
+  for (let i=0; i < num_guesses; i++) {
+    gtext[i].value = "";
+    gtext[i].setAttribute("disabled", "true");
+    showResult(i, {red:0, white:0});
   }
-  ctx.font = 'bold 36px sans-serif';
-  moveCursor(gi);
+  gtext[0].removeAttribute("disabled");
+  gtext[0].focus();
 }
 
-function moveCursor(gi) {
-  let x = 25;
-  ctx.fillStyle = bgcolor;
-  ctx.fillRect(0, 0, 35, canvas.height);
-  ctx.font = 'bold 16px sans-serif';
-  ctx.fillStyle = `rgb(255,255,255)`;
-  ctx.fillText('>', x, top_marg+gi*50);
-  ctx.font = 'bold 36px sans-serif';
-}
-
-function onKeyDown(e) {
-  document.getElementById("helpButton").blur();
-  document.getElementById("randButton").blur();
-  if (inHelp) return onKeyDownHelp();
-  if (done) return;
-  let id = e.keyCode;
-  if (id >= 65 && id <= 90) {
-    onLetter(e.key.toUpperCase());
-  }
-  else if (id === 13) {
-    onEnter();
-  }
-  else if (id === 8) {
-    onBackspace();
-  }
-}
-
-function onLetter(letter) {
-  //ctx.fillStyle = `rgb(255,255,255)`;
-  //ctx.fillRect(curx,cury+5,50,-50);
-  if (buf.length >= word_len) return;
-  ctx.fillStyle = `rgb(255,255,255)`;
-  ctx.fillText(`${letter}`, curx, cury)
-  curx += 50;
-  buf += letter;
-}
-
-function onBackspace() {
-  if (curx > 100) {
-    curx -= 50;
-    ctx.fillStyle = bgcolor;
-    ctx.fillRect(curx-25, cury-25, 50, 50);
-    buf = buf.substring(0, buf.length-1);
-  }
-}
-
-function onEnter() {
-  if (buf.length != word_len) return;
-  cury += 50;
-  curx = 100;
-  let solved = onGuess(buf, gi);
-  gi++;
+function onEnter2() {
+  let g = gtext[gi].value;
+  //console.log(`submit guess ${gi} ${g}`);
+  g = g.replace(/[^A-Za-z]/g, '');
+  if (g.length < 4) return false;
+  let solved = onGuess(g.toUpperCase(), gi);
+  gi++
   if (!solved && gi < num_guesses) {
-    buf = '';
-    moveCursor(gi);
+    gtext[gi].value = "";
+    gtext[gi].removeAttribute("disabled");
+    gtext[gi].focus();
+    gtext[gi-1].setAttribute("disabled", "true");
   } else {
+    gtext[gi-1].setAttribute("disabled", "true");
     done = true;
     if (solved) {
       showToast(win_msg[gi]);
@@ -286,10 +272,11 @@ function onEnter() {
       showToast(`Sorry! The answer was ${word}`);
     }
   }
+  return false;  // false always needed to consume input form
 }
 
 function onGuess(guess, gi) {
-  //console.log(`guess:  ${gi} ${buf}`);
+  //console.log(`guess:  ${gi} ${guess}`);
   let result = calcResult(word, guess);
   //console.log(`result:  ${result.red} ${result.white}`);
   showResult(gi, result);
@@ -328,7 +315,10 @@ function calcResult(word, guess) {
 }
 
 function showResult(gi, result) {
-  let ey = top_marg + gi*50 - 10;
+  //console.log(`show result ${gi} ${result}`);
+  const c = rcanv[gi];
+  const ctx = c.getContext("2d");
+  let ey = 15;
   let r = result.red;
   let w = result.white;
   ctx.strokeStyle = `rgb(255,255,255)`;
@@ -346,7 +336,7 @@ function showResult(gi, result) {
       ctx.fillStyle = bgcolor;
     }
     ctx.beginPath();
-    ctx.ellipse(300+(i % 2)*15, ey+(Math.floor(i/2))*15, 5, 5, 0, 0, 2*Math.PI);
+    ctx.ellipse(15+(i % 2)*15, ey+(Math.floor(i/2))*15, 5, 5, 0, 0, 2*Math.PI);
     ctx.fill();
     ctx.stroke();
   }
