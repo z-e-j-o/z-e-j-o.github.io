@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Zejo - Word Challenge</title>
+<style>
+.but {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.topdiv {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#helpMessage {
+  position: fixed; /* Sit on top of the screen */
+  visibility: hidden;
+  top: 10%;
+  left: 50%;
+  width: 280px;
+  padding: 10px;
+  margin-left: -150px;
+  background-color: #333;
+  color: #fff;
+  border-radius: 10px; /* Rounded borders */
+  z-index: 1;
+}
+
+#helpMessage.show {
+  visibility: visible;
+}
+
+#snackbar {
+  position: fixed; /* Sit on top of the screen */
+  visibility: hidden;
+  bottom: 50%;
+  left: 50%;
+  min-width: 250px;
+  padding: 15px;
+  margin-left: -140px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 10px; /* Rounded borders */
+  z-index: 1;
+}
+
+#snackbar.show {
+  visibility: visible;
+  /* Add animation: Take 0.5 seconds to fade in and out
+  However, delay the fade out process for 2.5 seconds */
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes fadein {
+  from {bottom: 47%; opacity: 0;}
+  to {bottom: 50%; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 47%; opacity: 0;}
+  to {bottom: 50%; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 50%; opacity: 1;}
+  to {bottom: 47%; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 50%; opacity: 1;}
+  to {bottom: 47%; opacity: 0;}
+}
+
+input {
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 36px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  width: 5em;
+}
+
+input:disabled {
+  background-color: white;
+}
+
+body {
+  color: white;
+  background-color: rgba(48,154,193,255);
+}
+
+table {
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+tr {
+  vertical-align: middle;
+}
+
+#myform_submit {
+  visibility: hidden;
+  position: fixed;
+}
+</style>
+</head>
+
+<body>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<div class="topdiv">
+<form id="myform" method="" autocomplete="off">
+<table>
+<tr><td>1.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" autofocus></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>2.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>3.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>4.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>5.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>6.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>7.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>8.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>9.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+<tr><td>10.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
+</table>
+<input id="myform_submit" type="submit" onclick="return onEnter2()">
+</form>
+</div>
+<div class="but">
+<button id="randButton" onclick="getRandomWord()">Play random word</button>
+<button id="helpButton" onclick="showHelp()">Help</button>
+<button id="shareButton" onclick="share()">Share</button>
+</div>
+<footer class="topdiv"> <small>&copy; Copyright 2022, A. M. Bilstad</small> </footer> 
+<div id="snackbar">message</div>
+
+<div id="helpMessage">
+<p>Guess the word-of-the-day using ten guesses or less.  Submit each guess by typing 4 letters,
+followed by the Enter key.  (A guess is not required to be a valid word.)  After each guess, a response is
+provided to the guess in the four circles to the right:  A red dot indicates there is a correct letter
+in a correct position.  A white dot indicates there is a correct letter, but not in the correct
+position.</p>
+<p>If you'd like to play using a different word than the word-of-the-day, press the "Play random word" button.</p>
+<div class="but">
+<button id="helpCloseButton" onclick="closeHelp()">OK</button>
+</div>
+</div>
+
+<script>
+
+// Copyright 2022  A. M. Bilstad
+// All rights reserved
+
+//<button id="friendButton" onclick="getWord()">Challenge a friend</button>
+
+let inHelp = false;
+
+const myform = document.getElementById("myform");
+const word_len = 4;
+const num_guesses = 10;
+//const bgcolor = 'rgb(0,0,255)';
+const bgcolor = 'rgba(48,154,193,255)';
+const top_marg = 50;
+
+const win_msg = {
+  1: 'Incredibly lucky!',
+  2: 'Pure genius!',
+  3: 'Wow! Amazing!',
+  4: 'Awesome!',
+  5: 'Super!',
+  6: 'Fantastic!',
+  7: 'Well done!',
+  8: 'Great!',
+  9: 'Nice job!',
+  10: 'You did it!',
+}
+
+// game variables:
+let word = null;
+let gi = 0;
+let done = false;
+let share_msg = "";
+
+let gtext = myform.querySelectorAll("input");
+let rcanv = myform.querySelectorAll("canvas");
+gtext[0].value = "";
+rcanv.forEach((c) => {
+  //console.log(`${c.id} ${c.width} ${c.height}`);
+  let ctx = c.getContext("2d");
+  ctx.fillStyle = bgcolor;
+  ctx.fillRect(0, 0, c.width, c.height);
+});
+
+function begin() {
+  getWordOfTheDay();
+  playSetup(null);
+}
+
+function showHelp() {
+  document.getElementById("helpMessage").className = "show";
+  inHelp = true;
+}
+
+function closeHelp() {
+  let m = document.getElementById("helpMessage");
+  m.className = m.className.replace("show", "");
+  inHelp = false;
+}
+
+function share() {
+  var listener = function(ev) {
+    ev.clipboardData.setData("text/html", share_msg);
+    ev.preventDefault();
+  };
+  document.addEventListener("copy", listener);
+  document.execCommand("copy");
+  document.removeEventListener("copy", listener);
+  showToast("Results copied to clipboard");
+}
+
+function getRandomWord() {
+  if (inHelp) return;
+  let i = Math.floor(Math.random() * dict.length);
+  let w = dict[i];
+  word = w.toUpperCase();
+  playSetup("Zejo random word<br>");
+  showToast("OK, a new random word has been chosen");
+}
+
+function getWord() {
+  let w = window.prompt('Choose a secret word (4 letters)');
+  word = w.toUpperCase();
+  playSetup("Zejo friend<br>");
+}
+
+function myhash(d) {
+  return Math.floor(((d%5*7477 + d%61*2017 + 701)*6311) % dict.length);
+}
+
+function getWordOfTheDay() {
+  let now = Math.floor(new Date() / 1000);
+  let tzoffset = 8*60*60;
+  let d = Math.floor((now - tzoffset) / (24*60*60));
+  //console.log(`day is ${d}`);
+  let w = dict[myhash(d)];
+  word = w.toUpperCase();
+}
+
+function playSetup(share_start) {
+  gi = 0;
+  done = false;
+  if (share_start) {
+    share_msg = share_start;
+  } else {
+    let now = new Date();
+    share_msg = "Zejo " + (now.getMonth()+1).toString() + "/" + now.getDate().toString() + "<br>";
+  }
+  for (let i=0; i < num_guesses; i++) {
+    gtext[i].value = "";
+    gtext[i].setAttribute("disabled", "true");
+    showResult(i, {red:0, white:0});
+  }
+  gtext[0].removeAttribute("disabled");
+  gtext[0].focus();
+}
+
+function onEnter2() {
+  let g = gtext[gi].value;
+  //console.log(`submit guess ${gi} ${g}`);
+  g = g.replace(/[^A-Za-z]/g, '');
+  if (g.length < 4) return false;
+  let solved = onGuess(g.toUpperCase(), gi);
+  gi++
+  if (!solved && gi < num_guesses) {
+    gtext[gi].value = "";
+    gtext[gi].removeAttribute("disabled");
+    gtext[gi].focus();
+    gtext[gi-1].setAttribute("disabled", "true");
+  } else {
+    gtext[gi-1].setAttribute("disabled", "true");
+    done = true;
+    if (solved) {
+      showToast(win_msg[gi]);
+    } else {
+      showToast(`Sorry! The answer was ${word}`);
+    }
+  }
+  return false;  // false always needed to consume input form
+}
+
+function onGuess(guess, gi) {
+  //console.log(`guess:  ${gi} ${guess}`);
+  let result = calcResult(word, guess);
+  //console.log(`result:  ${result.red} ${result.white}`);
+  showResult(gi, result);
+  share_msg = share_msg + `${gi+1} ` + "&#128308;".repeat(result.red) + "&#9898;".repeat(result.white) + "<br>";
+  return (result.red == word_len);
+}
+
+function calcResult(word, guess) {
+  let red = 0;
+  let white = 0;
+
+  let w = []
+  let g = []
+  for (let i=0; i < guess.length; i++) {
+    if (guess[i] === word[i]) {
+      red += 1;
+      g[i] = '-';
+      w[i] = '-';
+    } else {
+      w[i] = word[i];
+      g[i] = guess[i];
+    }
+  }
+
+  for (let i=0; i < guess.length; i++) {
+    if (g[i] != '-') {
+      let j = w.indexOf(g[i]);
+      //console.log(`white match: guess ${g} word ${w} ${i} ${j}`);
+      if (j != -1) {
+        white += 1;
+        w[j] = '-';
+      }
+    }
+  }
+
+  return {red:red, white:white}
+}
+
+function showResult(gi, result) {
+  //console.log(`show result ${gi} ${result}`);
+  const c = rcanv[gi];
+  const ctx = c.getContext("2d");
+  let ey = 15;
+  let r = result.red;
+  let w = result.white;
+  ctx.strokeStyle = `rgb(255,255,255)`;
+  ctx.fillStyle = `rgb(255,0,0)`;
+  for (let i=0; i < 4; i++) {
+    if (r > 0) {
+      ctx.fillStyle = `rgb(255,0,0)`;
+      r--;
+    }
+    else if (w > 0) {
+      ctx.fillStyle = `rgb(255,255,255)`;
+      w--;
+    }
+    else {
+      ctx.fillStyle = bgcolor;
+    }
+    ctx.beginPath();
+    ctx.ellipse(15+(i % 2)*15, ey+(Math.floor(i/2))*15, 5, 5, 0, 0, 2*Math.PI);
+    ctx.fill();
+    ctx.stroke();
+  }
+}
+
+function showToast(msg) {
+  var x = document.getElementById("snackbar");
+  x.innerHTML = msg;
+  x.className = "show";  // Add the "show" class to DIV
+
+  // this delay is roughly the sum of fade_in + dwell + fade_out
+  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2900);
+}
+
+
+const dict_str = "CmFibGUKYWNoZQphY2lkCmFmYXIKYWdlZAphbHNvCmFyZWEKYXJteQphdG9tCmF1bnQKYXZpZAphd2F5CmF4aXMKYXhsZQpiYWJ5CmJhY2sKYmFpdApiYWtlCmJhbGQKYmFsbApiYW5kCmJhbmsKYmFyawpiYXNlCmJhdGgKYmVhcgpiZWF0CmJlZW4KYmVlcgpiZWxsCmJlbHQKYmVudApiZXN0CmJpbGwKYmlyZApibG93CmJsdWUKYm9hdApib2R5CmJvbWIKYm9uZApib25lCmJvb2sKYm9vbQpib3JuCmJvc3MKYm90aApib3dsCmJ1bGsKYnVybgpidXNoCmJ1c3kKY2FsbApjYWxtCmNhbWUKY2FtcApjYXBlCmNhcmQKY2FyZQpjYXNlCmNhc2gKY2FzdApjZWxsCmNoYXQKY2hpcApjaXR5CmNsdWIKY29hbApjb2F0CmNvZGUKY29sZApjb21lCmNvb2sKY29vbApjb3BlCmNvcHkKY29yZQpjb3N0CmNyZXcKY3JvcApkYXJrCmRhdGEKZGF0ZQpkYXduCmRheXMKZGVhZApkZWFsCmRlYW4KZGVhcgpkZWJ0CmRlZXAKZGVueQpkZXNrCmRpYWwKZGlldApkaXNrCmRvZXMKZG9uZQpkb29yCmRvc2UKZG93bgpkcmF3CmRyZXcKZHJvcApkcnVnCmR1YWwKZHVrZQpkdXN0CmR1dHkKZWFjaAplYXJuCmVhc2UKZWFzdAplYXN5CmVkZ2UKZWxzZQpldmVuCmV2ZXIKZXZpbApleGl0CmZhY2UKZmFjdApmYWlsCmZhaXIKZmFsbApmYXJtCmZhc3QKZmF0ZQpmZWFyCmZlZWQKZmVlbApmZWV0CmZlbGwKZmVsdApmaWxlCmZpbGwKZmlsbQpmaW5kCmZpbmUKZmlyZQpmaXJtCmZpc2gKZml2ZQpmbGF0CmZsb3cKZm9vZApmb290CmZvcm0KZm9ydApmb3VyCmZyZWUKZnJvbQpmdWVsCmZ1bGwKZnVuZApnYWluCmdhbWUKZ2F0ZQpnYXZlCmdlYXIKZ2VuZQpnaWZ0CmdpcmwKZ2l2ZQpnbGFkCmdvYWwKZ29lcwpnb2xkCmdvbGYKZ29uZQpnb29kCmdyYXkKZ3Jldwpncm93Cmd1bGYKaGFpcgpoYWxmCmhhbGwKaGFuZApoYW5nCmhhcmQKaGFybQpoYXZlCmhlYWQKaGVhcgpoZWF0CmhlbGQKaGVscApoZXJlCmhlcm8KaGlnaApoaWxsCmhpcmUKaG9sZApob2xlCmhvbHkKaG9tZQpob3BlCmhvc3QKaG91cgpodWdlCmh1bmcKaHVudApodXJ0CmlkZWEKaW5jaAppbnRvCmlyb24KaXRlbQpqYWNrCmpvaW4KanVtcApqdXJ5Cmp1c3QKa2VlbgprZWVwCmtlcHQKa2ljawpraWxsCmtpbmQKa2luZwprbmVlCmtuZXcKa25vdwpsYWNrCmxhZHkKbGFpZApsYWtlCmxhbmQKbGFuZQpsYXN0CmxhdGUKbGVhZApsZWZ0Cmxlc3MKbGlmZQpsaWZ0Cmxpa2UKbGluZQpsaW5rCmxpc3QKbGl2ZQpsb2FkCmxvYW4KbG9jawpsb2dvCmxvbmcKbG9vawpsb3JkCmxvc2UKbG9zcwpsb3N0CmxvdmUKbHVjawptYWRlCm1haWwKbWFpbgptYWtlCm1hbGUKbWFueQptYXJrCm1hc3MKbWVhbAptZWFuCm1lYXQKbWVldAptZW51Cm1lcmUKbWlsZQptaWxrCm1pbGwKbWluZAptaW5lCm1pc3MKbW9kZQptb29kCm1vb24KbW9yZQptb3N0Cm1vdmUKbXVjaAptdXN0Cm5hbWUKbmF2eQpuZWFyCm5lY2sKbmVlZApuZXdzCm5leHQKbmljZQpuaWNrCm5pbmUKbm9uZQpub3NlCm5vdGUKb25jZQpvbmx5Cm9udG8Kb3BlbgpvcmFsCm92ZXIKcGFjZQpwYWNrCnBhZ2UKcGFpZApwYWluCnBhaXIKcGFsbQpwYXJrCnBhcnQKcGFzcwpwYXN0CnBhdGgKcGVhawpwaWNrCnBpbmsKcGlwZQpwbGFuCnBsYXkKcGxvdApwbHVnCnBsdXMKcG9sbApwb29sCnBvb3IKcG9ydApwb3N0CnB1bGwKcHVyZQpwdXNoCnJhY2UKcmFpbApyYWluCnJhbmsKcmFyZQpyYXRlCnJlYWQKcmVhbApyZWFyCnJlbHkKcmVudApyZXN0CnJpY2UKcmljaApyaWRlCnJpbmcKcmlzZQpyaXNrCnJvYWQKcm9jawpyb2xlCnJvbGwKcm9vZgpyb29tCnJvb3QKcm9zZQpydWxlCnJ1c2gKc2FmZQpzYWlkCnNha2UKc2FsZQpzYWx0CnNhbWUKc2FuZApzYXZlCnNlYXQKc2VlZApzZWVrCnNlZW0Kc2VlbgpzZWxmCnNlbGwKc2VuZApzZW50CnNoaXAKc2hvcApzaG90CnNob3cKc2h1dApzaWNrCnNpZGUKc2lnbgpzaXRlCnNpemUKc2tpbgpzbGlwCnNsb3cKc25vdwpzb2Z0CnNvaWwKc29sZApzb2xlCnNvbWUKc29uZwpzb29uCnNvcnQKc291bApzcG90CnN0YXIKc3RheQpzdGVwCnN0b3AKc3VjaApzdWl0CnN1cmUKdGFrZQp0YWxlCnRhbGsKdGFsbAp0YW5rCnRhcGUKdGFzawp0ZWFtCnRlbGwKdGVuZAp0ZXJtCnRlc3QKdGV4dAp0aGFuCnRoYXQKdGhlbQp0aGVuCnRoZXkKdGhpbgp0aGlzCnRodXMKdGlsbAp0aW1lCnRpbnkKdG9sZAp0b2xsCnRvbmUKdG9vawp0b29sCnRvdXIKdG93bgp0cmVlCnRyaXAKdHJ1ZQp0dW5lCnR1cm4KdHdpbgp0eXBlCnVuaXQKdXBvbgp1c2VkCnVzZXIKdmFyeQp2YXN0CnZlcmIKdmVyeQp2aWNlCnZpZXcKdm90ZQp3YWdlCndhaXQKd2FrZQp3YWxrCndhbGwKd2FudAp3YXJkCndhcm0Kd2FzaAp3YXZlCndheXMKd2Vhawp3ZWFyCndlZWsKd2VsbAp3ZW50CndlcmUKd2VzdAp3aGF0CndoZW4Kd2hvbQp3aWRlCndpZmUKd2lsZAp3aWxsCndpbmQKd2luZQp3aW5nCndpcmUKd2lzZQp3aXNoCndpdGgKd29vZAp3b3JkCndvcmUKd29yawp5YXJkCnlhd24KeWVhcgp5ZWxsCnlvdXIKemVhbAp6ZXJvCnplc3QKem9uZQp6b29tCg==";
+
+const dict = atob(dict_str).split("\n");
+
+begin();
+
+</script>
+
+</body>
+</html>
