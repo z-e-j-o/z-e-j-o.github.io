@@ -33,6 +33,11 @@
   visibility: visible;
 }
 
+#shareMessage {
+  /* position: fixed; */
+  visibility: hidden;
+}
+
 #snackbar {
   position: fixed; /* Sit on top of the screen */
   visibility: hidden;
@@ -136,6 +141,7 @@ tr {
 <button id="randButton" onclick="getRandomWord()">Play random word</button>
 <button id="helpButton" onclick="showHelp()">Help</button>
 <button id="shareButton" onclick="share()">Share</button>
+<div id="shareMessage">Zejo share</div>
 </div>
 <footer class="topdiv"> <small>&copy; Copyright 2022, A. M. Bilstad</small> </footer> 
 <div id="snackbar">message</div>
@@ -199,7 +205,7 @@ rcanv.forEach((c) => {
 
 function begin() {
   getWordOfTheDay();
-  playSetup(null);
+  playSetup();
 }
 
 function showHelp() {
@@ -214,13 +220,21 @@ function closeHelp() {
 }
 
 function share() {
-  var listener = function(ev) {
-    ev.clipboardData.setData("text/html", share_msg);
-    ev.preventDefault();
-  };
-  document.addEventListener("copy", listener);
+//  var listener = function(ev) {
+//    ev.clipboardData.setData("text/html", share_msg);
+//    ev.preventDefault();
+//  };
+  let m = document.getElementById("shareMessage");
+  m.innerHTML = share_msg;
+  m.style.visibility = "visible";
+  let r = document.createRange();
+  r.selectNode(m);
+  window.getSelection().addRange(r);
+//  document.addEventListener("copy", listener);
   document.execCommand("copy");
-  document.removeEventListener("copy", listener);
+//  document.removeEventListener("copy", listener);
+  window.getSelection().removeRange(r);
+  m.style.visibility = "hidden";
   showToast("Results copied to clipboard");
 }
 
@@ -229,14 +243,14 @@ function getRandomWord() {
   let i = Math.floor(Math.random() * dict.length);
   let w = dict[i];
   word = w.toUpperCase();
-  playSetup("Zejo random word<br>");
+  playSetup();
   showToast("OK, a new random word has been chosen");
 }
 
 function getWord() {
   let w = window.prompt('Choose a secret word (4 letters)');
   word = w.toUpperCase();
-  playSetup("Zejo friend<br>");
+  playSetup();
 }
 
 function myhash(d) {
@@ -252,15 +266,11 @@ function getWordOfTheDay() {
   word = w.toUpperCase();
 }
 
-function playSetup(share_start) {
+function playSetup() {
   gi = 0;
   done = false;
-  if (share_start) {
-    share_msg = share_start;
-  } else {
-    let now = new Date();
-    share_msg = "Zejo " + (now.getMonth()+1).toString() + "/" + now.getDate().toString() + "<br>";
-  }
+  let now = new Date();
+  share_msg = "Zejo " + (now.getMonth()+1).toString() + "/" + now.getDate().toString() + "<br>";
   for (let i=0; i < num_guesses; i++) {
     gtext[i].value = "";
     gtext[i].setAttribute("disabled", "true");
