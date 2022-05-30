@@ -158,6 +158,8 @@ position.</p>
 </div>
 </div>
 
+<script src="clipboard.min.js"></script>
+
 <script>
 
 // Copyright 2022  A. M. Bilstad
@@ -219,7 +221,7 @@ function closeHelp() {
   inHelp = false;
 }
 
-function share() {
+function share1() {
 //  var listener = function(ev) {
 //    ev.clipboardData.setData("text/html", share_msg);
 //    ev.preventDefault();
@@ -235,6 +237,11 @@ function share() {
 //  document.removeEventListener("copy", listener);
   window.getSelection().removeRange(r);
   m.style.visibility = "hidden";
+  showToast("Results copied to clipboard");
+}
+
+function share() {
+  ClipboardJS.copy(share_msg + '\n');
   showToast("Results copied to clipboard");
 }
 
@@ -270,7 +277,7 @@ function playSetup() {
   gi = 0;
   done = false;
   let now = new Date();
-  share_msg = "Zejo " + (now.getMonth()+1).toString() + "/" + now.getDate().toString() + "<br>";
+  share_msg = "Zejo " + (now.getMonth()+1).toString() + "-" + now.getDate().toString() + "-" + now.getFullYear().toString() + '\n';
   for (let i=0; i < num_guesses; i++) {
     gtext[i].value = "";
     gtext[i].setAttribute("disabled", "true");
@@ -309,7 +316,8 @@ function onGuess(guess, gi) {
   let result = calcResult(word, guess);
   //console.log(`result:  ${result.red} ${result.white}`);
   showResult(gi, result);
-  share_msg = share_msg + `${gi+1} ` + "&#128308;".repeat(result.red) + "&#9898;".repeat(result.white) + "<br>";
+  //share_msg = share_msg + `${gi+1} ` + "&#128308;".repeat(result.red) + "&#9898;".repeat(result.white) + "<br>";
+  share_msg = share_msg + `${gi+1} ` + '\u{1f534}'.repeat(result.red) + '\u{26aa}'.repeat(result.white) + '\n';
   return (result.red == word_len);
 }
 
