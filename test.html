@@ -33,11 +33,6 @@
   visibility: visible;
 }
 
-#shareMessage {
-  /* position: fixed; */
-  visibility: hidden;
-}
-
 #snackbar {
   position: fixed; /* Sit on top of the screen */
   visibility: hidden;
@@ -134,14 +129,13 @@ tr {
 <tr><td>9.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
 <tr><td>10.</td><td><input type="text" pattern="[a-zA-Z]*" maxlength="4" disabled="true"></td><td><canvas width="50" height="50"></canvas></td></tr>
 </table>
-<input id="myform_submit" type="submit" onclick="return onEnter2()">
+<input id="myform_submit" type="submit" onclick="return onEnter()">
 </form>
 </div>
 <div class="but">
 <button id="randButton" onclick="getRandomWord()">Play random word</button>
 <button id="helpButton" onclick="showHelp()">Help</button>
 <button id="shareButton" onclick="share()">Share</button>
-<div id="shareMessage">Zejo share</div>
 </div>
 <footer class="topdiv"> <small>&copy; Copyright 2022, A. M. Bilstad</small> </footer> 
 <div id="snackbar">message</div>
@@ -206,8 +200,10 @@ rcanv.forEach((c) => {
 });
 
 function begin() {
-  getWordOfTheDay();
-  playSetup();
+  let w = getWordOfTheDay();
+  let now = new Date();
+  let source = (now.getMonth()+1).toString() + "-" + now.getDate().toString() + "-" + now.getFullYear().toString();
+  playSetup(w, source);
 }
 
 function showHelp() {
@@ -221,25 +217,6 @@ function closeHelp() {
   inHelp = false;
 }
 
-function share1() {
-//  var listener = function(ev) {
-//    ev.clipboardData.setData("text/html", share_msg);
-//    ev.preventDefault();
-//  };
-  let m = document.getElementById("shareMessage");
-  m.innerHTML = share_msg;
-  m.style.visibility = "visible";
-  let r = document.createRange();
-  r.selectNode(m);
-  window.getSelection().addRange(r);
-//  document.addEventListener("copy", listener);
-  document.execCommand("copy");
-//  document.removeEventListener("copy", listener);
-  window.getSelection().removeRange(r);
-  m.style.visibility = "hidden";
-  showToast("Results copied to clipboard");
-}
-
 function share() {
   ClipboardJS.copy(share_msg + '\n');
   showToast("Results copied to clipboard");
@@ -249,15 +226,13 @@ function getRandomWord() {
   if (inHelp) return;
   let i = Math.floor(Math.random() * dict.length);
   let w = dict[i];
-  word = w.toUpperCase();
-  playSetup();
+  playSetup(w, 'random');
   showToast("OK, a new random word has been chosen");
 }
 
 function getWord() {
   let w = window.prompt('Choose a secret word (4 letters)');
-  word = w.toUpperCase();
-  playSetup();
+  playSetup(w, 'from user');
 }
 
 function myhash(d) {
@@ -270,14 +245,14 @@ function getWordOfTheDay() {
   let d = Math.floor((now - tzoffset) / (24*60*60));
   //console.log(`day is ${d}`);
   let w = dict[myhash(d)];
-  word = w.toUpperCase();
+  return w;
 }
 
-function playSetup() {
+function playSetup(w, source) {
+  word = w.toUpperCase();
   gi = 0;
   done = false;
-  let now = new Date();
-  share_msg = "Zejo " + (now.getMonth()+1).toString() + "-" + now.getDate().toString() + "-" + now.getFullYear().toString() + '\n';
+  share_msg = "Zejo " + source + "\n";
   for (let i=0; i < num_guesses; i++) {
     gtext[i].value = "";
     gtext[i].setAttribute("disabled", "true");
@@ -287,7 +262,7 @@ function playSetup() {
   gtext[0].focus();
 }
 
-function onEnter2() {
+function onEnter() {
   let g = gtext[gi].value;
   //console.log(`submit guess ${gi} ${g}`);
   g = g.replace(/[^A-Za-z]/g, '');
@@ -316,7 +291,6 @@ function onGuess(guess, gi) {
   let result = calcResult(word, guess);
   //console.log(`result:  ${result.red} ${result.white}`);
   showResult(gi, result);
-  //share_msg = share_msg + `${gi+1} ` + "&#128308;".repeat(result.red) + "&#9898;".repeat(result.white) + "<br>";
   share_msg = share_msg + `${gi+1} ` + '\u{1f534}'.repeat(result.red) + '\u{26aa}'.repeat(result.white) + '\n';
   return (result.red == word_len);
 }
