@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Bracket Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --tournament-blue: #005eb8;
+            --tournament-orange: #f87316;
+        }
+        body {
+            background-color: #f1f5f9;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: 13px;
+        }
+        .regions-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+        .bracket-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            gap: 6px;
+        }
+        .game-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 3px;
+            width: 155px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .team-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 2px 8px;
+            border-radius: 2px;
+            height: 20px;
+            white-space: nowrap;
+            color: #1e293b;
+        }
+        .correct-pick {
+            background-color: #dbeafe; /* Blue-100 */
+            color: #1e40af; /* Blue-800 */
+            border: 1px solid #bfdbfe;
+        }
+        .region-container {
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .championship-section {
+            background: #fff7ed;
+            border: 2px solid #f87316;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        #team-data-source { display: none; }
+        
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .champion-box {
+            border: 2px solid #f87316;
+            background: white;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <!-- TEAM DATA SOURCE -->
+    <table id="team-data-source">
+        <thead><tr><th>Region</th><th>Seed</th><th>Name</th></tr></thead>
+        <tbody>
+            <!-- Upper Left -->
+            <tr><td>upper_left</td><td>1</td><td>Duke</td></tr><tr><td>upper_left</td><td>16</td><td>Siena</td></tr>
+            <tr><td>upper_left</td><td>8</td><td>Ohio St.</td></tr><tr><td>upper_left</td><td>9</td><td>TCU</td></tr>
+            <tr><td>upper_left</td><td>5</td><td>St. John's</td></tr><tr><td>upper_left</td><td>12</td><td>Northern Iowa</td></tr>
+            <tr><td>upper_left</td><td>4</td><td>Kansas</td></tr><tr><td>upper_left</td><td>13</td><td>Cal Baptist</td></tr>
+            <tr><td>upper_left</td><td>6</td><td>Louisville</td></tr><tr><td>upper_left</td><td>11</td><td>South Florida</td></tr>
+            <tr><td>upper_left</td><td>3</td><td>Michigan St.</td></tr><tr><td>upper_left</td><td>14</td><td>N. Dakota St.</td></tr>
+            <tr><td>upper_left</td><td>7</td><td>UCLA</td></tr><tr><td>upper_left</td><td>10</td><td>UCF</td></tr>
+            <tr><td>upper_left</td><td>2</td><td>Connecticut</td></tr><tr><td>upper_left</td><td>15</td><td>Furman</td></tr>
+            <!-- Upper Right -->
+            <tr><td>upper_right</td><td>1</td><td>Arizona</td></tr><tr><td>upper_right</td><td>16</td><td>Long Island</td></tr>
+            <tr><td>upper_right</td><td>8</td><td>Villanova</td></tr><tr><td>upper_right</td><td>9</td><td>Utah St.</td></tr>
+            <tr><td>upper_right</td><td>5</td><td>Wisconsin</td></tr><tr><td>upper_right</td><td>12</td><td>High Point</td></tr>
+            <tr><td>upper_right</td><td>4</td><td>Arkansas</td></tr><tr><td>upper_right</td><td>13</td><td>Hawaii</td></tr>
+            <tr><td>upper_right</td><td>6</td><td>BYU</td></tr><tr><td>upper_right</td><td>11</td><td>NC St/Texas</td></tr>
+            <tr><td>upper_right</td><td>3</td><td>Gonzaga</td></tr><tr><td>upper_right</td><td>14</td><td>Kennesaw St.</td></tr>
+            <tr><td>upper_right</td><td>7</td><td>Miami FL</td></tr><tr><td>upper_right</td><td>10</td><td>Missouri</td></tr>
+            <tr><td>upper_right</td><td>2</td><td>Purdue</td></tr><tr><td>upper_right</td><td>15</td><td>Queens NC</td></tr>
+            <!-- Lower Left -->
+            <tr><td>lower_left</td><td>1</td><td>Florida</td></tr><tr><td>lower_left</td><td>16</td><td>Lehigh/PVAMU</td></tr>
+            <tr><td>lower_left</td><td>8</td><td>Clemson</td></tr><tr><td>lower_left</td><td>9</td><td>Iowa</td></tr>
+            <tr><td>lower_left</td><td>5</td><td>Vanderbilt</td></tr><tr><td>lower_left</td><td>12</td><td>McNeese</td></tr>
+            <tr><td>lower_left</td><td>4</td><td>Nebraska</td></tr><tr><td>lower_left</td><td>13</td><td>Troy</td></tr>
+            <tr><td>lower_left</td><td>6</td><td>North Carolina</td></tr><tr><td>lower_left</td><td>11</td><td>VCU</td></tr>
+            <tr><td>lower_left</td><td>3</td><td>Illinois</td></tr><tr><td>lower_left</td><td>14</td><td>Pennsylvania</td></tr>
+            <tr><td>lower_left</td><td>7</td><td>St. Mary's</td></tr><tr><td>lower_left</td><td>10</td><td>Texas A&M</td></tr>
+            <tr><td>lower_left</td><td>2</td><td>Houston</td></tr><tr><td>lower_left</td><td>15</td><td>Idaho</td></tr>
+            <!-- Lower Right -->
+            <tr><td>lower_right</td><td>1</td><td>Michigan</td></tr><tr><td>lower_right</td><td>16</td><td>Howard/UMBC</td></tr>
+            <tr><td>lower_right</td><td>8</td><td>Georgia</td></tr><tr><td>lower_right</td><td>9</td><td>St. Louis</td></tr>
+            <tr><td>lower_right</td><td>5</td><td>Texas Tech</td></tr><tr><td>lower_right</td><td>12</td><td>Akron</td></tr>
+            <tr><td>lower_right</td><td>4</td><td>Alabama</td></tr><tr><td>lower_right</td><td>13</td><td>Hofstra</td></tr>
+            <tr><td>lower_right</td><td>6</td><td>Tennessee</td></tr><tr><td>lower_right</td><td>11</td><td>SMU/Miami OH</td></tr>
+            <tr><td>lower_right</td><td>3</td><td>Virginia</td></tr><tr><td>lower_right</td><td>14</td><td>Wright St.</td></tr>
+            <tr><td>lower_right</td><td>7</td><td>Kentucky</td></tr><tr><td>lower_right</td><td>10</td><td>Santa Clara</td></tr>
+            <tr><td>lower_right</td><td>2</td><td>Iowa St.</td></tr><tr><td>lower_right</td><td>15</td><td>Tennessee St.</td></tr>
+        </tbody>
+    </table>
+
+    <div id="loading" class="loading-overlay">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+        <p class="text-gray-500 font-bold uppercase tracking-widest text-xs">Loading Bracket Data...</p>
+    </div>
+
+    <div class="max-w-[1650px] mx-auto">
+        <header class="flex items-center justify-between bg-white p-4 mb-4 rounded-lg shadow-sm border-b-4 border-blue-600">
+            <div>
+                <h1 class="text-2xl font-black text-gray-900 tracking-tight uppercase">Bracket <span class="text-blue-600">Viewer</span></h1>
+                <p id="viewer-subtitle" class="text-xs text-gray-400 font-bold uppercase mt-1">Tournament 2026</p>
+            </div>
+            <div id="user-info" class="flex gap-8 items-center">
+                <div class="text-right">
+                    <span class="block text-[10px] font-bold text-gray-400 uppercase">Participant</span>
+                    <span id="player-name" class="text-lg font-black text-gray-800">—</span>
+                </div>
+                <div class="text-right border-l pl-8">
+                    <span class="block text-[10px] font-bold text-gray-400 uppercase">Tie-Breaker Score</span>
+                    <span id="tie-breaker" class="text-lg font-black text-blue-600">—</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Regions 0 & 1 -->
+        <div class="regions-row">
+            <div id="region-0-container" class="region-container">
+                <h2 id="region-0-label" class="text-center font-bold text-blue-800 mb-3 border-b pb-1 text-xs uppercase tracking-widest"></h2>
+                <div class="flex gap-2 overflow-x-auto" id="bracket-0"></div>
+            </div>
+            <div id="region-1-container" class="region-container">
+                <h2 id="region-1-label" class="text-center font-bold text-blue-800 mb-3 border-b pb-1 text-xs uppercase tracking-widest"></h2>
+                <div class="flex gap-2 overflow-x-auto" id="bracket-1"></div>
+            </div>
+        </div>
+
+        <div class="championship-section">
+            <!-- Champion Slot -->
+            <div class="flex flex-col items-center mb-2">
+                <span class="text-[10px] font-bold text-orange-600 uppercase tracking-widest mb-1">National Champion</span>
+                <div id="champion-container"></div>
+            </div>
+            <!-- Final Four + Final Matchup -->
+            <div class="flex items-center justify-center gap-12 w-full" id="final-four-container"></div>
+        </div>
+
+        <!-- Regions 2 & 3 -->
+        <div class="regions-row">
+            <div id="region-2-container" class="region-container">
+                <h2 id="region-2-label" class="text-center font-bold text-blue-800 mb-3 border-b pb-1 text-xs uppercase tracking-widest"></h2>
+                <div class="flex gap-2 overflow-x-auto" id="bracket-2"></div>
+            </div>
+            <div id="region-3-container" class="region-container">
+                <h2 id="region-3-label" class="text-center font-bold text-blue-800 mb-3 border-b pb-1 text-xs uppercase tracking-widest"></h2>
+                <div class="flex gap-2 overflow-x-auto" id="bracket-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const REGION_CONFIG = [
+            { id: 'upper_left', label: 'Midwest Region', visualIdx: 0 },
+            { id: 'upper_right', label: 'East Region', visualIdx: 1 },
+            { id: 'lower_left', label: 'West Region', visualIdx: 2 },
+            { id: 'lower_right', label: 'South Region', visualIdx: 3 }
+        ];
+
+        const BASE_URL = "https://z-e-j-o.github.io/bgm/players/";
+
+        let teamsMap = {};
+        let state = {};
+        let results = null; 
+
+        function initMasterData() {
+            const rows = document.querySelectorAll('#team-data-source tbody tr');
+            rows.forEach(row => {
+                const cells = row.cells;
+                const regId = cells[0].innerText.toLowerCase().trim();
+                const seed = parseInt(cells[1].innerText);
+                const name = cells[2].innerText.trim();
+                const teamObj = { id: `${regId}-${seed}-${name}`, seed, name, region: regId };
+                teamsMap[name] = teamObj;
+            });
+
+            REGION_CONFIG.forEach(reg => {
+                state[reg.id] = { r64: [], r32: [], s16: [], e8: [] };
+            });
+            state.finals = { f4: [], championship: [] };
+        }
+
+        async function loadPlayerData() {
+            const params = new URLSearchParams(window.location.search);
+            const playerFile = params.get('player');
+            const resultsFile = params.get('results');
+
+            if (!playerFile) {
+                document.getElementById('loading').innerHTML = `
+                    <p class="text-red-500 font-bold uppercase text-xs">No Player Specified</p>
+                    <p class="text-gray-400 text-[10px] mt-2">Add ?player=filename.txt to the URL</p>
+                `;
+                return;
+            }
+
+            try {
+                const response = await fetch(BASE_URL + playerFile);
+                if (!response.ok) throw new Error("Player file not found");
+                const text = await response.text();
+                parsePlayerData(text, state);
+
+                if (resultsFile) {
+                    try {
+                        const resResponse = await fetch(BASE_URL + resultsFile);
+                        if (resResponse.ok) {
+                            const resText = await resResponse.text();
+                            results = {};
+                            REGION_CONFIG.forEach(reg => {
+                                results[reg.id] = { r64: [], r32: [], s16: [], e8: [] };
+                            });
+                            results.finals = { f4: [], championship: [] };
+                            parsePlayerData(resText, results);
+                        }
+                    } catch (e) {
+                        console.error("Results file could not be loaded", e);
+                    }
+                }
+
+                document.getElementById('loading').style.display = 'none';
+                renderAll();
+            } catch (err) {
+                document.getElementById('loading').innerHTML = `
+                    <p class="text-red-500 font-bold uppercase text-xs">Error Loading Data</p>
+                    <p class="text-gray-400 text-[10px] mt-2">${err.message}</p>
+                `;
+            }
+        }
+
+        function getTeam(name) {
+            if (!name || name === "TBD") return null;
+            return teamsMap[name] || { name: name, seed: '?', id: 'unknown' };
+        }
+
+        function parsePlayerData(content, targetState) {
+            const lines = content.split('\n').map(l => l.trim());
+            
+            if (targetState === state) {
+                document.getElementById('player-name').innerText = lines[0];
+                document.getElementById('tie-breaker').innerText = lines[2];
+            }
+
+            const regionOrder = ['upper_left', 'upper_right', 'lower_left', 'lower_right'];
+            let cursor = 3;
+
+            regionOrder.forEach(id => {
+                targetState[id].r64 = lines.slice(cursor, cursor + 8).map(getTeam);
+                cursor += 8;
+            });
+
+            regionOrder.forEach(id => {
+                targetState[id].r32 = lines.slice(cursor, cursor + 4).map(getTeam);
+                cursor += 4;
+            });
+
+            regionOrder.forEach(id => {
+                targetState[id].s16 = lines.slice(cursor, cursor + 2).map(getTeam);
+                cursor += 2;
+            });
+
+            regionOrder.forEach(id => {
+                targetState[id].e8 = [getTeam(lines[cursor])];
+                cursor += 1;
+            });
+
+            targetState.finals.f4 = [getTeam(lines[cursor]), getTeam(lines[cursor+1])];
+            cursor += 2;
+
+            targetState.finals.championship = [getTeam(lines[cursor])];
+        }
+
+        /**
+         * Pick verification logic.
+         */
+        function isPickCorrect(team, region, round) {
+            if (!results || !team) return false;
+
+            if (round === 'r64') {
+                //console.log(team, region, round, results[region].r64);
+                //return results[region].r64.some(t => t && t.name === team.name);
+                return false;
+            }
+            if (round === 'r32') {
+                //return results[region].r32.some(t => t && t.name === team.name);
+                return results[region].r64.some(t => t && t.name === team.name);
+            }
+            if (round === 's16') {
+                //return results[region].s16.some(t => t && t.name === team.name);
+                return results[region].r32.some(t => t && t.name === team.name);
+            }
+            if (round === 'e8') {
+                //return results[region].e8.some(t => t && t.name === team.name);
+                return results[region].s16.some(t => t && t.name === team.name);
+            }
+            if (round === 'f4_matchup') {
+                console.log(team, region, round, team.region, results[team.region].e8);
+                // To be correct in the Final Four, the team must exist in the actual results' Final Four
+                //return results.finals.f4.some(t => t && t.name === team.name);
+                return results[team.region].e8.some(t => t && t.name === team.name);
+            }
+            if (round === 'championship_matchup') {
+                console.log(team, region, round, results.finals.f4);
+                // To be correct in the championship game matchup, the team must exist in the actual results' F4 winner pool
+                //return results.finals.championship.some(t => t && t.name === team.name);
+                return results.finals.f4.some(t => t && t.name === team.name);
+            }
+            if (round === 'champion') {
+                // To be the correct national champion
+                return results.finals.championship.some(t => t && t.name === team.name);
+            }
+
+            return false;
+        }
+
+        function createMatchup(t1, t2, region, round) {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            
+            [t1, t2].forEach((team) => {
+                const row = document.createElement('div');
+                if (!team) {
+                    row.className = 'team-row bg-gray-50';
+                    row.innerHTML = `<span class="text-[10px] text-gray-400 font-bold uppercase">TBD</span>`;
+                } else {
+                    const highlighted = isPickCorrect(team, region, round);
+                    row.className = `team-row ${highlighted ? 'correct-pick' : ''}`;
+                    row.innerHTML = `
+                        <span class="flex items-center gap-2 overflow-hidden w-full">
+                            <span class="text-[10px] font-bold opacity-60 w-4 shrink-0">${team.seed}</span>
+                            <span class="font-semibold truncate text-[12px]">${team.name}</span>
+                        </span>
+                        ${highlighted ? '<span class="text-blue-600 font-bold ml-1">*</span>' : ''}
+                    `;
+                }
+                card.appendChild(row);
+            });
+            return card;
+        }
+
+        function renderRegion(index) {
+            const config = REGION_CONFIG[index];
+            const regionId = config.id;
+            document.getElementById(`region-${index}-label`).innerText = config.label;
+            const container = document.getElementById(`bracket-${index}`);
+            container.innerHTML = '';
+            
+            const rounds = ['r64', 'r32', 's16', 'e8'];
+            const displayRounds = (index === 1 || index === 3) ? [...rounds].reverse() : rounds;
+            
+            const originalRegionTeams = Array.from(document.querySelectorAll('#team-data-source tbody tr'))
+                .filter(row => row.cells[0].innerText.trim() === regionId)
+                .map(row => ({
+                    seed: row.cells[1].innerText,
+                    name: row.cells[2].innerText
+                }));
+
+            displayRounds.forEach(round => {
+                const col = document.createElement('div');
+                col.className = 'bracket-column';
+                const count = round === 'r64' ? 8 : round === 'r32' ? 4 : round === 's16' ? 2 : 1;
+                
+                for (let i = 0; i < count; i++) {
+                    let t1, t2;
+                    if (round === 'r64') {
+                        t1 = originalRegionTeams[i*2]; 
+                        t2 = originalRegionTeams[i*2+1];
+                    } else {
+                        const prevMap = { r32: 'r64', s16: 'r32', e8: 's16' };
+                        const prev = prevMap[round];
+                        t1 = state[regionId][prev][i*2]; 
+                        t2 = state[regionId][prev][i*2+1];
+                    }
+                    col.appendChild(createMatchup(t1, t2, regionId, round));
+                }
+                container.appendChild(col);
+            });
+        }
+
+        function renderFinals() {
+            // Render Champion box
+            const champContainer = document.getElementById('champion-container');
+            champContainer.innerHTML = '';
+            const champTeam = state.finals.championship[0];
+            const champCard = document.createElement('div');
+            champCard.className = 'game-card champion-box';
+            
+            const champRow = document.createElement('div');
+            if (!champTeam) {
+                champRow.className = 'team-row';
+                champRow.innerHTML = `<span class="text-[10px] text-gray-400 font-bold uppercase">TBD</span>`;
+            } else {
+                const isWinnerCorrect = isPickCorrect(champTeam, 'finals', 'champion');
+                champRow.className = `team-row ${isWinnerCorrect ? 'correct-pick' : ''}`;
+                champRow.innerHTML = `
+                     <span class="flex items-center gap-2 overflow-hidden w-full">
+                        <span class="text-[10px] font-bold opacity-60 w-4 shrink-0">${champTeam.seed}</span>
+                        <span class="font-semibold truncate text-[12px]">${champTeam.name}</span>
+                    </span>
+                    ${isWinnerCorrect ? '<span class="text-blue-600 font-bold ml-1">✓</span>' : ''}
+                `;
+            }
+            champCard.appendChild(champRow);
+            champContainer.appendChild(champCard);
+
+            // Render Final Matchup structure
+            const f4Container = document.getElementById('final-four-container');
+            f4Container.innerHTML = '';
+            
+            // These are the individual Final Four games (Regional Winners vs Each Other)
+            const leftF4 = createMatchup(state.upper_left.e8[0], state.lower_left.e8[0], 'finals', 'f4_matchup');
+            const rightF4 = createMatchup(state.upper_right.e8[0], state.lower_right.e8[0], 'finals', 'f4_matchup');
+            
+            // This is the actual Championship Matchup (Final Two)
+            const finalGameCard = document.createElement('div');
+            finalGameCard.className = 'game-card mx-2'; 
+            
+            state.finals.f4.forEach((team) => {
+                const row = document.createElement('div');
+                if (!team) {
+                    row.className = 'team-row bg-gray-50';
+                    row.innerHTML = `<span class="text-[10px] text-gray-400 font-bold uppercase">TBD</span>`;
+                } else {
+                    const highlighted = isPickCorrect(team, 'finals', 'championship_matchup');
+                    row.className = `team-row ${highlighted ? 'correct-pick' : ''}`;
+                    row.innerHTML = `
+                         <span class="flex items-center gap-2 overflow-hidden w-full">
+                            <span class="text-[10px] font-bold opacity-60 w-4 shrink-0">${team.seed}</span>
+                            <span class="font-semibold truncate text-[12px]">${team.name}</span>
+                        </span>
+                        ${highlighted ? '<span class="text-blue-600 font-bold ml-1">*</span>' : ''}
+                    `;
+                }
+                finalGameCard.appendChild(row);
+            });
+
+            f4Container.append(leftF4, finalGameCard, rightF4);
+        }
+
+        function renderAll() { 
+            REGION_CONFIG.forEach((_, idx) => renderRegion(idx)); 
+            renderFinals(); 
+        }
+
+        initMasterData();
+        loadPlayerData();
+    </script>
+</body>
+</html>
+

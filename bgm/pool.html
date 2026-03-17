@@ -167,7 +167,6 @@
             const urlParams = new URLSearchParams(window.location.search);
             const dataParam = urlParams.get('data') || DEFAULT_FILENAME;
 
-            // If dataParam looks like just a filename (no http/https), prepend the base URL
             const tsvUrl = (dataParam.startsWith('http://') || dataParam.startsWith('https://')) 
                 ? dataParam 
                 : `${BASE_DATA_URL}/${dataParam}`;
@@ -188,9 +187,14 @@
 
                 dataRows.forEach(rowText => {
                     const cols = rowText.split('\t');
+                    // We need at least 10 columns for the stats. 
+                    // bracketUrl is the optional 11th column (index 10).
                     if (cols.length < 10) return;
 
                     const [rank, player, points, max, r1, r2, r3, r4, semis, final, bracketUrl] = cols;
+
+                    // Clean the URL: trim it and check if it exists
+                    const cleanUrl = (bracketUrl && bracketUrl.trim() !== "") ? bracketUrl.trim() : null;
 
                     const tr = document.createElement('tr');
                     
@@ -200,11 +204,14 @@
                     else if(rankInt === 2) rankStyle = 'bg-slate-300 text-white';
                     else if(rankInt === 3) rankStyle = 'bg-orange-400 text-white';
 
+                    // logic: only wrap player name in <a> if cleanUrl is truthy
+                    const playerDisplay = cleanUrl 
+                        ? `<a href="${cleanUrl}" target="_blank" class="player-link">${player}</a>` 
+                        : player;
+
                     tr.innerHTML = `
                         <td><span class="rank-badge ${rankStyle}">${rank}</span></td>
-                        <td class="font-bold">
-                            ${bracketUrl ? `<a href="${bracketUrl}" target="_blank" class="player-link">${player}</a>` : player}
-                        </td>
+                        <td class="font-bold">${playerDisplay}</td>
                         <td class="text-right points-col">${points}</td>
                         <td class="text-right max-col">${max}</td>
                         <td class="round-col">${r1}</td>
