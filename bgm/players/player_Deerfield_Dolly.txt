@@ -1,13 +1,13 @@
-Noah B
+Deerfield Dolly
 
-137
+169
 Duke
 TCU
 St. John's
 Kansas
-South Florida
+Louisville
 Michigan St.
-UCF
+UCLA
 Connecticut
 Arizona
 Villanova
@@ -16,51 +16,51 @@ Arkansas
 BYU
 Gonzaga
 Miami FL
-Queens NC
+Purdue
 Florida
 Clemson
 Vanderbilt
 Nebraska
 North Carolina
 Illinois
-St. Mary's
+Texas A&M
 Houston
 Michigan
-Georgia
+St. Louis
 Texas Tech
 Alabama
 Tennessee
 Virginia
-Santa Clara
+Kentucky
 Iowa St.
 Duke
-Kansas
-South Florida
+St. John's
+Michigan St.
 Connecticut
 Arizona
-Arkansas
-BYU
-Miami FL
+Wisconsin
+Gonzaga
+Purdue
 Florida
-Nebraska
-North Carolina
+Vanderbilt
+Illinois
 Houston
 Michigan
-Alabama
+Texas Tech
 Virginia
-Santa Clara
-Kansas
-Connecticut
-Arizona
-BYU
-Nebraska
+Iowa St.
+Duke
+Michigan St.
+Wisconsin
+Purdue
+Vanderbilt
 Houston
 Michigan
 Virginia
-Kansas
-Arizona
+Duke
+Purdue
 Houston
 Michigan
-Houston
-Arizona
-Arizona
+Duke
+Michigan
+Michigan
