@@ -1,4 +1,4 @@
-actual 16 games
+actual 20 games
 None
 0
 Duke
@@ -9,7 +9,7 @@ Louisville
 Michigan St.
 TBD
 TBD
-TBD
+Arizona
 TBD
 High Point
 Arkansas
@@ -27,11 +27,11 @@ Texas A&M
 Houston
 Michigan
 St. Louis
+Texas Tech
 TBD
 TBD
-TBD
-TBD
-TBD
+Virginia
+Kentucky
 TBD
 TBD
 TBD
