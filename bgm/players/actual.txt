@@ -1,4 +1,4 @@
-actual 20 games
+actual 24 games
 None
 0
 Duke
@@ -10,7 +10,7 @@ Michigan St.
 TBD
 TBD
 Arizona
-TBD
+Utah St.
 High Point
 Arkansas
 NC St/Texas
@@ -28,11 +28,11 @@ Houston
 Michigan
 St. Louis
 Texas Tech
-TBD
-TBD
+Alabama
+Tennessee
 Virginia
 Kentucky
-TBD
+Iowa St.
 TBD
 TBD
 TBD
