@@ -1,4 +1,4 @@
-actual 12 games
+actual 16 games
 None
 0
 Duke
@@ -14,7 +14,7 @@ TBD
 High Point
 Arkansas
 NC St/Texas
-TBD
+Gonzaga
 TBD
 TBD
 TBD
@@ -22,11 +22,11 @@ TBD
 Vanderbilt
 Nebraska
 VCU
-TBD
+Illinois
 Texas A&M
-TBD
+Houston
 Michigan
-TBD
+St. Louis
 TBD
 TBD
 TBD
