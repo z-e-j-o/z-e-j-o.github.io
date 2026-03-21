@@ -1,13 +1,13 @@
-actual 24 games
+actual 28 games
 None
 0
 Duke
 TCU
-TBD
+St. John's
 TBD
 Louisville
 Michigan St.
-TBD
+UCLA
 TBD
 Arizona
 Utah St.
@@ -16,9 +16,9 @@ Arkansas
 NC St/Texas
 Gonzaga
 TBD
+Purdue
 TBD
-TBD
-TBD
+Iowa
 Vanderbilt
 Nebraska
 VCU
