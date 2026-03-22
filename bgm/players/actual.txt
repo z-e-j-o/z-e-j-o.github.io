@@ -1,4 +1,4 @@
-actual round 1
+actual 40 games
 None
 0
 Duke
@@ -33,19 +33,19 @@ Tennessee
 Virginia
 Kentucky
 Iowa St.
+Duke
+TBD
+Michigan St.
 TBD
 TBD
+Arkansas
+NC St/Texas
 TBD
 TBD
-TBD
-TBD
-TBD
-TBD
-TBD
-TBD
-TBD
-TBD
-TBD
+Nebraska
+Illinois
+Houston
+Michigan
 TBD
 TBD
 TBD
