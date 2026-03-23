@@ -1,4 +1,4 @@
-actual 40 games
+actual 44 games
 None
 0
 Duke
@@ -34,21 +34,21 @@ Virginia
 Kentucky
 Iowa St.
 Duke
-TBD
+St. John's
 Michigan St.
 TBD
 TBD
 Arkansas
 NC St/Texas
-TBD
+Purdue
 TBD
 Nebraska
 Illinois
 Houston
 Michigan
 TBD
-TBD
-TBD
+Tennessee
+Iowa St.
 TBD
 TBD
 TBD
