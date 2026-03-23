@@ -1,4 +1,4 @@
-actual 44 games
+actual 2 rounds
 None
 0
 Duke
@@ -36,17 +36,17 @@ Iowa St.
 Duke
 St. John's
 Michigan St.
-TBD
-TBD
+Connecticut
+Arizona
 Arkansas
 NC St/Texas
 Purdue
-TBD
+Iowa
 Nebraska
 Illinois
 Houston
 Michigan
-TBD
+Alabama
 Tennessee
 Iowa St.
 TBD
