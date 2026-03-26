@@ -338,25 +338,47 @@
             let ret = 'Future';
 
             if (round === 'r64') {
-                return 'Future'
+                let mypick = state[region].r64[Math.floor(rindex/2)];
+                if (team.name === mypick.name) {
+                   let winteam = results[region].r64[Math.floor(rindex/2)];
+                   ret = (!winteam)? 'Future' : (winteam.name === mypick.name)? 'Correct-pick' : 'Wrong-pick';
+                }
             } else if (round === 'r32') {
-                let winteam = results[region].r64[rindex];
-                ret = (!winteam)? 'Future' : (winteam.name === team.name)? 'Correct-pick' : 'Wrong-pick';
+                let mypick = state[region].r32[Math.floor(rindex/2)];
+                if (team.name === mypick.name) {
+                    let winteam = results[region].r32[Math.floor(rindex/2)];
+                    ret = (!winteam)? 'Future' : (winteam.name === team.name)? 'Correct-pick' : 'Wrong-pick';
+                }
             } else if (round === 's16') {
-                let winteam = results[region].r32[rindex];
-                ret = (!winteam)? 'Future' : (winteam.name === team.name)? 'Correct-pick' : 'Wrong-pick';
+                let mypick = state[region].s16[Math.floor(rindex/2)];
+                if (team.name === mypick.name) {
+                    let winteam = results[region].s16[Math.floor(rindex/2)];
+                    ret = (!winteam)? 'Future' : (winteam.name === team.name)? 'Correct-pick' : 'Wrong-pick';
+                }
             } else if (round === 'e8') {
-                let winteam = results[region].s16[rindex];
-                ret = (!winteam)? 'Future' : (winteam.name === team.name)? 'Correct-pick' : 'Wrong-pick';
+                let mypick = state[region].e8[Math.floor(rindex/2)];
+                if (team.name === mypick.name) {
+                    let winteam = results[region].e8[Math.floor(rindex/2)];
+                    ret = (!winteam)? 'Future' : (winteam.name === team.name)? 'Correct-pick' : 'Wrong-pick';
+                }
             } else if (round === 'f4_matchup') {
-                let winteam = results[team.region].e8[rindex];
-                ret = (!winteam)? 'Future' : (winteam.name === team.name)? 'Correct-pick' : 'Wrong-pick';
+                let mypick = state.finals.f4[Math.floor(rindex/2)];
+                if (team.name === mypick.name) {
+                    let winteam = results.finals.f4[Math.floor(rindex/2)];
+                    ret = (!winteam)? 'Future' : (winteam.name === team.name)? 'Correct-pick' : 'Wrong-pick';
+                }
             } else if (round === 'championship_matchup') {
-                let winteam = results.finals.f4[rindex];
-                ret = (!winteam)? 'Future' : (winteam.name === team.name)? 'Correct-pick' : 'Wrong-pick';
+                let mypick = state.finals.championship[rindex];
+                if (team.name === mypick.name) {
+                    let winteam = results.finals.championship[rindex];
+                    ret = (!winteam)? 'Future' : (winteam.name === team.name)? 'Correct-pick' : 'Wrong-pick';
+                }
             } else if (round === 'champion') {
-                let winteam = results.finals.championship[rindex];
-                ret = (!winteam)? 'Future' : (winteam.name === team.name)? 'Correct-pick' : 'Wrong-pick';
+                let mypick = state.finals.championship[rindex];
+                if (team.name === mypick.name) {
+                    let winteam = results.finals.championship[rindex];
+                    ret = (!winteam)? 'Future' : (winteam.name === team.name)? 'Correct-pick' : 'Wrong-pick';
+                }
             }
 
             let hasLost = losers.some(t => t && t.name === team.name);
@@ -399,7 +421,7 @@
                             <span class="text-[10px] font-bold opacity-60 w-4 shrink-0">${team.seed}</span>
                             <span class="font-semibold truncate text-[12px]">${team.name}</span>
                         </span>
-                        ${status === 'Correct-pick' ? '<span class="text-blue-600 font-bold ml-1">*</span>' : ''}
+                        ${status === 'Correct-pick' ? '<span class="text-blue-600 font-bold ml-1">✓</span>' : ''}
                         ${status === 'Wrong-pick' ? '<span class="text-red-600 font-bold ml-1">x</span>' : ''}
                     `;
                 }
@@ -461,7 +483,7 @@
                 champRow.className = 'team-row';
                 champRow.innerHTML = `<span class="text-[10px] text-gray-400 font-bold uppercase">TBD</span>`;
             } else {
-                const status = isPickCorrect(champTeam, 'finals', 'champion');
+                const status = isPickCorrect(champTeam, 'finals', 'champion', 0);
                 const statusClass = getTeamRowClass(status);
                 
                 champRow.className = `team-row ${statusClass}`;
@@ -502,7 +524,7 @@
                             <span class="text-[10px] font-bold opacity-60 w-4 shrink-0">${team.seed}</span>
                             <span class="font-semibold truncate text-[12px]">${team.name}</span>
                         </span>
-                        ${status === 'Correct-pick' ? '<span class="text-blue-600 font-bold ml-1">*</span>' : ''}
+                        ${status === 'Correct-pick' ? '<span class="text-blue-600 font-bold ml-1">✓</span>' : ''}
                         ${status === 'Wrong-pick' ? '<span class="text-red-600 font-bold ml-1">x</span>' : ''}
                     `;
                 }
