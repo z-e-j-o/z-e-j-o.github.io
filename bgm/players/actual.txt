@@ -1,4 +1,4 @@
-actual 2 rounds
+actual 52 games
 None
 0
 Duke
@@ -51,10 +51,10 @@ Tennessee
 Iowa St.
 TBD
 TBD
-TBD
-TBD
-TBD
-TBD
+Arizona
+Purdue
+Iowa
+Illinois
 TBD
 TBD
 TBD
