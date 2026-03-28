@@ -1,4 +1,4 @@
-actual 52 games
+actual 3 rounds
 None
 0
 Duke
@@ -49,14 +49,14 @@ Michigan
 Alabama
 Tennessee
 Iowa St.
-TBD
-TBD
+Duke
+Connecticut
 Arizona
 Purdue
 Iowa
 Illinois
-TBD
-TBD
+Michigan
+Tennessee
 TBD
 TBD
 TBD
