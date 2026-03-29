@@ -1,4 +1,4 @@
-actual 58 games
+actual 4 rounds
 None
 0
 Duke
@@ -57,10 +57,10 @@ Iowa
 Illinois
 Michigan
 Tennessee
-TBD
+Connecticut
 Arizona
 Illinois
-TBD
+Michigan
 TBD
 TBD
 TBD
