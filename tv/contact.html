@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Community Service Organization</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">CSO</div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="about.html" class="nav-link">About Us</a></li>
+                <li><a href="contact.html" class="nav-link active">Contact Us</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero hero-contact">
+        <div class="hero-content">
+            <h1>Contact Us</h1>
+            <p>We'd love to hear from you</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section class="contact-content">
+            <div class="contact-info">
+                <h2>Get In Touch</h2>
+                <p>Have questions or want to volunteer? We're here to help! Feel free to reach out using any of the methods below.</p>
+
+                <div class="contact-details">
+                    <div class="detail-item">
+                        <h3>📍 Address</h3>
+                        <p>123 Community Street<br>
+                           Springfield, ST 12345<br>
+                           United States</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <h3>📞 Phone</h3>
+                        <p>(555) 123-4567<br>
+                           Monday - Friday: 9:00 AM - 5:00 PM</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <h3>✉️ Email</h3>
+                        <p><a href="mailto:info@cso.org">info@cso.org</a><br>
+                           <a href="mailto:volunteer@cso.org">volunteer@cso.org</a></p>
+                    </div>
+
+                    <div class="detail-item">
+                        <h3>🌐 Social Media</h3>
+                        <p>
+                            <a href="#" class="social-link">Facebook</a> | 
+                            <a href="#" class="social-link">Twitter</a> | 
+                            <a href="#" class="social-link">Instagram</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-form-section">
+                <h2>Send us a Message</h2>
+                <form class="contact-form" action="#" method="POST">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Subject *</label>
+                        <select id="subject" name="subject" required>
+                            <option value="">-- Select a subject --</option>
+                            <option value="volunteer">Volunteer Inquiry</option>
+                            <option value="donation">Donation Information</option>
+                            <option value="partnership">Partnership Opportunity</option>
+                            <option value="event">Event Information</option>
+                            <option value="general">General Inquiry</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea id="message" name="message" rows="6" required></textarea>
+                    </div>
+
+                    <div class="form-group checkbox">
+                        <input type="checkbox" id="newsletter" name="newsletter">
+                        <label for="newsletter">I'd like to receive updates about upcoming events</label>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>How can I volunteer?</h3>
+                    <p>Contact our Volunteer Coordinator Jennifer Patel at volunteer@cso.org or call (555) 123-4567. 
+                       No prior experience needed!</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>How can I donate?</h3>
+                    <p>We accept donations year-round. Contact us at info@cso.org for information about monetary donations, 
+                       in-kind donations, or fundraising opportunities.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>What are your office hours?</h3>
+                    <p>We're open Monday through Friday, 9:00 AM to 5:00 PM. We're closed on weekends and holidays.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>How are donations used?</h3>
+                    <p>All donations support our community programs and initiatives. We maintain full transparency and can 
+                       provide detailed reports upon request.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>Can I partner with your organization?</h3>
+                    <p>Absolutely! We welcome corporate and organizational partnerships. Email us at info@cso.org to discuss 
+                       collaboration opportunities.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>How do I register for an event?</h3>
+                    <p>Registration details are provided on our website for each event. You can also call us to register 
+                       or inquire about upcoming events.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Community Service Organization. All rights reserved.</p>
+        <p>Making a difference, one community at a time.</p>
+    </footer>
+</body>
+</html>
