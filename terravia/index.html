@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Terravia — Restoring Roadside Landscapes</title>
+  <link rel="stylesheet" href="/terravia/css/terravia.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="site-title">Terravia</div>
+      <nav class="main-nav" aria-label="Primary">
+        <ul>
+          <li class="nav-item dropdown" data-dropdown="home">
+            <button class="drop-toggle">Home</button>
+            <ul class="dropdown-menu" id="home-dropdown">
+              <li><a href="#mission">Mission</a></li>
+              <li><a href="#upcoming">Upcoming Events</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown" data-dropdown="getinvolved">
+            <button class="drop-toggle">Get Involved</button>
+            <ul class="dropdown-menu" id="getinvolved-dropdown">
+              <li><a href="/terravia/get-involved.html#volunteer">Volunteer</a></li>
+              <li><a href="/terravia/get-involved.html#chapter">Chapter</a></li>
+              <li><a href="/terravia/get-involved.html#partner">Partner</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown" data-dropdown="about">
+            <button class="drop-toggle">About Us</button>
+            <ul class="dropdown-menu" id="about-dropdown">
+              <li><a href="/terravia/about.html#board">Board</a></li>
+              <li><a href="/terravia/about.html#impact">Impact</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <a class="donate-btn" href="/terravia/about.html#donation">DONATION</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Carousel -->
+    <section class="carousel" aria-label="Image Carousel">
+      <div class="slides" id="slides">
+        <article class="slide" data-index="0">
+          <img src="/terravia/images/slide1.svg" alt="Roadside landscape with native plants and grasses">
+          <div class="slide-content">
+            <h2>Educating the public and restoring roadside landscapes</h2>
+            <a class="cta" href="/terravia/about.html">About Us</a>
+          </div>
+        </article>
+        <article class="slide" data-index="1">
+          <img src="/terravia/images/slide2.svg" alt="Road median prepared for planting native species">
+          <div class="slide-content">
+            <h2>Join the team!</h2>
+            <a class="cta" href="/terravia/get-involved.html#volunteer">Volunteer</a>
+          </div>
+        </article>
+        <article class="slide" data-index="2">
+          <img src="/terravia/images/slide3.svg" alt="Restored roadside with drought-tolerant native plants">
+          <div class="slide-content">
+            <h2>Help us continue our mission</h2>
+            <a class="cta" href="/terravia/about.html#donation">Donate</a>
+          </div>
+        </article>
+      </div>
+      <div class="carousel-controls">
+        <button id="prev" aria-label="Previous slide">◀</button>
+        <button id="next" aria-label="Next slide">▶</button>
+      </div>
+    </section>
+
+    <!-- Mission -->
+    <section id="mission" class="mission container">
+      <div class="mission-text">
+        <h2>Mission</h2>
+        <p>Terravia is dedicated to restoring underutilized roadside landscapes by implementing the use of resilient native and drought-tolerant plants and by engaging the public in support of sustainable landscape management, in order to advance biodiversity and climate resilience.</p>
+      </div>
+      <div class="mission-image">
+        <img src="/terravia/images/mission.svg" alt="Stylized native meadow beside a roadway">
+      </div>
+    </section>
+
+    <!-- Upcoming Events -->
+    <section id="upcoming" class="upcoming container">
+      <div class="section-header">
+        <h2>Upcoming Events</h2>
+        <a class="calendar-btn" href="https://calendar.google.com/calendar/u/3?cid=OTRhMmQ3ZmFkMjRmYTBjOTFkMjJjMDUyNTIwYjRkMzRkZmJjN2IzN2NhMTNkZDQ5NWViZjczODA0ODMzMDU0ZEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t" target="_blank" rel="noopener">Calendar</a>
+      </div>
+      <div class="events-grid">
+        <article class="event-card">
+          <img src="/terravia/images/event1.svg" alt="Highway intersection planting site">
+          <h3>Intersection Planting: Greenway Junction</h3>
+          <p>Help restore the median at Greenway Junction with native grasses and pollinator-friendly plants. Gloves and tools provided.</p>
+        </article>
+        <article class="event-card">
+          <img src="/terravia/images/event2.svg" alt="Road median restoration work">
+          <h3>Median Renewal: Route 12 Median</h3>
+          <p>Join volunteers to remove invasive species and install drought-tolerant native plugs along the Route 12 median.</p>
+        </article>
+        <article class="event-card">
+          <img src="/terravia/images/event3.svg" alt="Roadside erosion control planting">
+          <h3>Erosion Control Planting: Oak Hill Turn</h3>
+          <p>Assist in planting deep-rooted natives on a sloped roadside to stabilize soil and support local biodiversity.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p><a href="mailto:terravia.org@gmail.com">terravia.org@gmail.com</a></p>
+      </div>
+      <div class="footer-col">
+        <h4>Sign up for updates!</h4>
+        <form class="signup" action="#" onsubmit="event.preventDefault(); alert('Thanks — this is a placeholder signup.');">
+          <label for="email" class="sr-only">Email address</label>
+          <input id="email" type="email" placeholder="your@email.com" required>
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+      <div class="footer-col social">
+        <a href="#" aria-label="Instagram" class="social-link"><img src="/terravia/images/instagram.svg" alt="Instagram logo"></a>
+        <a href="#" aria-label="LinkedIn" class="social-link"><img src="/terravia/images/linkedin.svg" alt="LinkedIn logo"></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/terravia/js/nav.js"></script>
+  <script src="/terravia/js/carousel.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <rect width="100%" height="100%" fill="#e3ffd9"/>
+  <rect x="0" y="260" width="800" height="140" fill="#cbe7b1"/>
+  <rect x="0" y="280" width="800" height="60" fill="#f0f0f0"/>
+  <rect x="320" y="260" width="160" height="10" fill="#9aa"/>
+  <!-- stylized plants -->
+  <g fill="#6b8f46">
+    <ellipse cx="180" cy="260" rx="28" ry="12"/>
+    <ellipse cx="220" cy="250" rx="20" ry="9"/>
+    <ellipse cx="140" cy="250" rx="22" ry="10"/>
+  </g>
+  <text x="50%" y="80" font-size="28" text-anchor="middle" fill="#244" font-family="sans-serif">Educating the public and restoring roadside landscapes</text>
+</svg>
